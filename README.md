@@ -1,4 +1,4 @@
-# perf.js
+# perf-plus.js
 Advances stats library to monitor, frame time, memory and resource details.
 
 Uses `performance.now()` with `Date.now()` fallback on older browsers.
@@ -29,7 +29,7 @@ The following data is available:
 
 #### UI
 
-<img alt="basic" src="https://raw.githubusercontent.com/adireddy/perf/master/assets/ui.png"/>
+<img alt="basic" src="https://raw.githubusercontent.com/adireddy/perf-plus/master/assets/ui.png"/>
 
 Powered by [dat.GUI](https://github.com/dataarts/dat.gui)
 
