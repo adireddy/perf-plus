@@ -27,6 +27,10 @@ The following data is available:
 - `stats.resourceCount` - total resources loaded by the app
 - `stats.loadDuration` - loadDuration of all the resources
 
+To destroy stats call
+
+`stats.destroy();`
+
 #### UI
 
 <img alt="basic" src="https://raw.githubusercontent.com/adireddy/perf-plus/master/assets/ui.png"/>

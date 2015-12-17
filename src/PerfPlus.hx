@@ -5,7 +5,10 @@ import js.Browser;
 @:expose class PerfPlus {
 
 	public static var MEASUREMENT_INTERVAL:Int = 1000;
+	public var averageFps:Float;
 	public var currentFps:Float;
+	public var minFps:Float;
+	public var maxFps:Float;
 	public var currentMs:Float;
 	public var currentMem:String;
 	public var resourceCount:Int;
@@ -15,11 +18,7 @@ import js.Browser;
 	var _startTime:Float;
 	var _prevTime:Float;
 	var _ticks:Int;
-	var _fpsMin:Float;
-	var _fpsMax:Float;
 	var _memCheck:Bool;
-	var _pos:String;
-	var _offset:Float;
 
 	var _perfObj:Performance;
 	var _memoryObj:MemoryInfo;
@@ -27,17 +26,26 @@ import js.Browser;
 	var _ui:PerfUI;
 	var _win:Window;
 
-	public function new(?pos = "TR", ?offset:Float = 0) {
+	var _totalFps:Float;
+	var _updateIntervalCount:Float;
+
+	public function new() {
+		_init();
+	}
+
+	inline function _init() {
 		currentFps = 0;
+		averageFps = 0;
 		currentMs = 0;
 		currentMem = "0";
 
-		_pos = pos;
-		_offset = offset;
+		_totalFps = 0;
+		_updateIntervalCount = 0;
+
 		_time = 0;
 		_ticks = 0;
-		_fpsMin = Math.POSITIVE_INFINITY;
-		_fpsMax = 0;
+		minFps = Math.POSITIVE_INFINITY;
+		maxFps = 0;
 		_startTime = _now();
 		_prevTime = -MEASUREMENT_INTERVAL;
 	}
@@ -69,13 +77,16 @@ import js.Browser;
 		_ticks++;
 
 		if (time > _prevTime + MEASUREMENT_INTERVAL) {
+			_updateIntervalCount++;
 			currentMs = Math.round(time - _startTime);
 
 			_ui.setMs(currentMs);
 
 			currentFps = Math.round((_ticks * 1000) / (time - _prevTime));
-			_fpsMin = Math.min(_fpsMin, currentFps);
-			_fpsMax = Math.max(_fpsMax, currentFps);
+			minFps = Math.min(minFps, currentFps);
+			maxFps = Math.max(maxFps, currentFps);
+			_totalFps += currentFps;
+			averageFps = _totalFps / _updateIntervalCount;
 			_ui.setFps(currentFps);
 
 			_prevTime = time;
@@ -101,5 +112,6 @@ import js.Browser;
 
 	public function destroy() {
 		_ui.destroy();
+		_init();
 	}
 }

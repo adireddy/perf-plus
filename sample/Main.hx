@@ -1,5 +1,4 @@
 import pixi.core.display.Container;
-import js.html.DivElement;
 import js.Browser;
 import pixi.core.textures.Texture;
 import pixi.plugins.app.Application;
@@ -23,7 +22,6 @@ class Main extends Application {
 	var container:Container;
 
 	var amount:Int = 100;
-	var counter:DivElement;
 
 	var stats:PerfPlus;
 
@@ -34,39 +32,20 @@ class Main extends Application {
 
 	function _init() {
 		//stats = new PerfPlus();
+		/*haxe.Timer.delay(function() {
+			stats.start();
+		}, 3000);*/
 
-		backgroundColor = 0xE0E6F8;
+		backgroundColor = 0xFFFFFF;
 		onUpdate = _onUpdate;
 		onResize = _onResize;
 		super.start();
 		_setup();
-
-		/*haxe.Timer.delay(function() {
-			stats.start();
-		}, 1000);*/
 	}
 
 	function _setup() {
 		maxX = Browser.window.innerWidth;
 		maxY = Browser.window.innerHeight;
-
-		counter = Browser.document.createDivElement();
-		counter.style.position = "absolute";
-		counter.style.top = "0px";
-		counter.style.width = "76px";
-		counter.style.background = "#CCCCC";
-		counter.style.backgroundColor = "#105CB6";
-		counter.style.fontFamily = "Helvetica,Arial";
-		counter.style.padding = "2px";
-		counter.style.color = "#0FF";
-		counter.style.fontSize = "9px";
-		counter.style.fontWeight = "bold";
-		counter.style.textAlign = "center";
-		counter.className = "counter";
-		Browser.document.body.appendChild(counter);
-
-		count = startBunnyCount;
-		counter.innerHTML = count + " BUNNIES";
 
 		container = new Container();
 		stage.addChild(container);
@@ -87,19 +66,6 @@ class Main extends Application {
 			bunnys.push(b);
 			container.addChild(b);
 		}
-
-		renderer.view.onmousedown = onTouchStart;
-		renderer.view.onmouseup = onTouchEnd;
-		Browser.document.addEventListener("touchstart", onTouchStart, true);
-		Browser.document.addEventListener("touchend", onTouchEnd, true);
-	}
-
-	function onTouchStart(event) {
-		isAdding = false;
-	}
-
-	function onTouchEnd(event) {
-		isAdding = false;
 	}
 
 	function _onUpdate(elapsedTime:Float) {
@@ -117,7 +83,6 @@ class Main extends Application {
 					count++;
 				}
 			}
-			counter.innerHTML = count + " BUNNIES";
 		}
 
 		for (i in 0 ... bunnys.length) {
@@ -149,9 +114,6 @@ class Main extends Application {
 	function _onResize() {
 		maxX = Browser.window.innerWidth;
 		maxY = Browser.window.innerHeight;
-
-		counter.style.top = "1px";
-		counter.style.left = "1px";
 	}
 
 	static function main() {

@@ -14,11 +14,15 @@ class PerfUI {
 	public var loadDuration(default, null):Float;
 
 	public function new() {
+		_init();
+	}
+
+	inline function _init() {
 		resourceCount = 0;
 		loadDuration = 0;
 		_data = { FPS: 0, MS: 0, MEMORY: "0" };
 		_menu = new GUI();
-		_menu.add(_data, "FPS", 1, 60).listen();
+		_menu.add(_data, "FPS", 0, 60).listen();
 		_menu.add(_data, "MS").listen();
 		_menu.add(_data, "MEMORY").listen();
 	}
@@ -36,19 +40,22 @@ class PerfUI {
 	}
 
 	public function addResources(data:Array<PerformanceResourceTiming>) {
-		var folder = _menu.addFolder("RESOURCE COUNT");
+		var folder = _menu.addFolder("RESOURCES DATA");
 		_resourcesData = data;
 		resourceCount = data.length;
-		var resources = { TOTAL: data.length, types: [], files: [] };
+		var resources = { TOTAL: data.length, DURATION: 0, types: [], files: [] };
 		_types = { count: 0, duration: 0 };
 
 		folder.add(resources, "TOTAL");
 
 		var types:Array<String> = [];
 		for (res in data) {
+			loadDuration += res.duration;
 			var ext = res.name.substring(res.name.lastIndexOf(".") + 1, res.name.length);
 			if (types.indexOf(ext) == -1) types.push(ext);
 		}
+		resources.DURATION = Std.int(loadDuration);
+		folder.add(resources, "DURATION");
 
 		var fileTypes = folder.add(resources, "types", types);
 		folder.add(_types, "count").listen();
@@ -61,7 +68,6 @@ class PerfUI {
 		var files:Array<String> = [];
 		for (res in data) {
 			files.push(res.name);
-			loadDuration += res.duration;
 		}
 		var allFiles = filesFolder.add(resources, "files", files);
 		filesFolder.add(_fileData, "duration").listen();
@@ -95,5 +101,6 @@ class PerfUI {
 
 	public function destroy() {
 		_menu.destroy();
+		_init();
 	}
 }

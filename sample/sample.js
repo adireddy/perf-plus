@@ -160,7 +160,7 @@ Main.main = function() {
 Main.__super__ = pixi_plugins_app_Application;
 Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 	_init: function() {
-		this.backgroundColor = 14739192;
+		this.backgroundColor = 16777215;
 		this.onUpdate = $bind(this,this._onUpdate);
 		this.onResize = $bind(this,this._onResize);
 		pixi_plugins_app_Application.prototype.start.call(this);
@@ -169,23 +169,6 @@ Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 	,_setup: function() {
 		this.maxX = window.innerWidth;
 		this.maxY = window.innerHeight;
-		var _this = window.document;
-		this.counter = _this.createElement("div");
-		this.counter.style.position = "absolute";
-		this.counter.style.top = "0px";
-		this.counter.style.width = "76px";
-		this.counter.style.background = "#CCCCC";
-		this.counter.style.backgroundColor = "#105CB6";
-		this.counter.style.fontFamily = "Helvetica,Arial";
-		this.counter.style.padding = "2px";
-		this.counter.style.color = "#0FF";
-		this.counter.style.fontSize = "9px";
-		this.counter.style.fontWeight = "bold";
-		this.counter.style.textAlign = "center";
-		this.counter.className = "counter";
-		window.document.body.appendChild(this.counter);
-		this.count = this.startBunnyCount;
-		this.counter.innerHTML = this.count + " BUNNIES";
 		this.container = new PIXI.Container();
 		this.stage.addChild(this.container);
 		var bunny1 = PIXI.Texture.fromImage("assets/bunnymark/bunny1.png");
@@ -205,16 +188,6 @@ Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 			this.bunnys.push(b);
 			this.container.addChild(b);
 		}
-		this.renderer.view.onmousedown = $bind(this,this.onTouchStart);
-		this.renderer.view.onmouseup = $bind(this,this.onTouchEnd);
-		window.document.addEventListener("touchstart",$bind(this,this.onTouchStart),true);
-		window.document.addEventListener("touchend",$bind(this,this.onTouchEnd),true);
-	}
-	,onTouchStart: function(event) {
-		this.isAdding = false;
-	}
-	,onTouchEnd: function(event) {
-		this.isAdding = false;
 	}
 	,_onUpdate: function(elapsedTime) {
 		if(this.isAdding) {
@@ -233,7 +206,6 @@ Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 					this.count++;
 				}
 			}
-			this.counter.innerHTML = this.count + " BUNNIES";
 		}
 		var _g11 = 0;
 		var _g2 = this.bunnys.length;
@@ -262,27 +234,38 @@ Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 	,_onResize: function() {
 		this.maxX = window.innerWidth;
 		this.maxY = window.innerHeight;
-		this.counter.style.top = "1px";
-		this.counter.style.left = "1px";
 	}
 });
-var PerfPlus = $hx_exports.PerfPlus = function(pos,offset) {
-	if(offset == null) offset = 0;
-	if(pos == null) pos = "TR";
+var PerfPlus = $hx_exports.PerfPlus = function() {
 	this.currentFps = 0;
+	this.averageFps = 0;
 	this.currentMs = 0;
 	this.currentMem = "0";
-	this._pos = pos;
-	this._offset = offset;
+	this._totalFps = 0;
+	this._updateIntervalCount = 0;
 	this._time = 0;
 	this._ticks = 0;
-	this._fpsMin = Infinity;
-	this._fpsMax = 0;
+	this.minFps = Infinity;
+	this.maxFps = 0;
 	if(this._perfObj != null && ($_=this._perfObj,$bind($_,$_.now)) != null) this._startTime = this._perfObj.now(); else this._startTime = new Date().getTime();
 	this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
 };
 PerfPlus.prototype = {
-	start: function(win) {
+	_init: function() {
+		this.currentFps = 0;
+		this.averageFps = 0;
+		this.currentMs = 0;
+		this.currentMem = "0";
+		this._totalFps = 0;
+		this._updateIntervalCount = 0;
+		this._time = 0;
+		this._ticks = 0;
+		this.minFps = Infinity;
+		this.maxFps = 0;
+		if(this._perfObj != null && ($_=this._perfObj,$bind($_,$_.now)) != null) this._startTime = this._perfObj.now(); else this._startTime = new Date().getTime();
+		this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
+	}
+	,start: function(win) {
 		this._ui = new PerfUI();
 		if(win == null) win = window;
 		this._win = win;
@@ -304,11 +287,14 @@ PerfPlus.prototype = {
 		if(this._perfObj != null && ($_=this._perfObj,$bind($_,$_.now)) != null) time = this._perfObj.now(); else time = new Date().getTime();
 		this._ticks++;
 		if(time > this._prevTime + PerfPlus.MEASUREMENT_INTERVAL) {
+			this._updateIntervalCount++;
 			this.currentMs = Math.round(time - this._startTime);
 			this._ui.setMs(this.currentMs);
 			this.currentFps = Math.round(this._ticks * 1000 / (time - this._prevTime));
-			this._fpsMin = Math.min(this._fpsMin,this.currentFps);
-			this._fpsMax = Math.max(this._fpsMax,this.currentFps);
+			this.minFps = Math.min(this.minFps,this.currentFps);
+			this.maxFps = Math.max(this.maxFps,this.currentFps);
+			this._totalFps += this.currentFps;
+			this.averageFps = this._totalFps / this._updateIntervalCount;
 			this._ui.setFps(this.currentFps);
 			this._prevTime = time;
 			this._ticks = 0;
@@ -330,6 +316,18 @@ PerfPlus.prototype = {
 	}
 	,destroy: function() {
 		this._ui.destroy();
+		this.currentFps = 0;
+		this.averageFps = 0;
+		this.currentMs = 0;
+		this.currentMem = "0";
+		this._totalFps = 0;
+		this._updateIntervalCount = 0;
+		this._time = 0;
+		this._ticks = 0;
+		this.minFps = Infinity;
+		this.maxFps = 0;
+		if(this._perfObj != null && ($_=this._perfObj,$bind($_,$_.now)) != null) this._startTime = this._perfObj.now(); else this._startTime = new Date().getTime();
+		this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
 	}
 };
 var PerfUI = function() {
@@ -337,12 +335,21 @@ var PerfUI = function() {
 	this.loadDuration = 0;
 	this._data = { FPS : 0, MS : 0, MEMORY : "0"};
 	this._menu = new dat.gui.GUI();
-	this._menu.add(this._data,"FPS",1,60).listen();
+	this._menu.add(this._data,"FPS",0,60).listen();
 	this._menu.add(this._data,"MS").listen();
 	this._menu.add(this._data,"MEMORY").listen();
 };
 PerfUI.prototype = {
-	setFps: function(val) {
+	_init: function() {
+		this.resourceCount = 0;
+		this.loadDuration = 0;
+		this._data = { FPS : 0, MS : 0, MEMORY : "0"};
+		this._menu = new dat.gui.GUI();
+		this._menu.add(this._data,"FPS",0,60).listen();
+		this._menu.add(this._data,"MS").listen();
+		this._menu.add(this._data,"MEMORY").listen();
+	}
+	,setFps: function(val) {
 		if(val >= 0) this._data.FPS = val;
 	}
 	,setMs: function(val) {
@@ -352,10 +359,10 @@ PerfUI.prototype = {
 		this._data.MEMORY = val;
 	}
 	,addResources: function(data) {
-		var folder = this._menu.addFolder("RESOURCE COUNT");
+		var folder = this._menu.addFolder("RESOURCES DATA");
 		this._resourcesData = data;
 		this.resourceCount = data.length;
-		var resources = { TOTAL : data.length, types : [], files : []};
+		var resources = { TOTAL : data.length, DURATION : 0, types : [], files : []};
 		this._types = { count : 0, duration : 0};
 		folder.add(resources,"TOTAL");
 		var types = [];
@@ -363,9 +370,12 @@ PerfUI.prototype = {
 		while(_g < data.length) {
 			var res = data[_g];
 			++_g;
+			this.loadDuration += res.duration;
 			var ext = res.name.substring(res.name.lastIndexOf(".") + 1,res.name.length);
 			if(HxOverrides.indexOf(types,ext,0) == -1) types.push(ext);
 		}
+		resources.DURATION = this.loadDuration | 0;
+		folder.add(resources,"DURATION");
 		var fileTypes = folder.add(resources,"types",types);
 		folder.add(this._types,"count").listen();
 		folder.add(this._types,"duration").listen();
@@ -379,7 +389,6 @@ PerfUI.prototype = {
 			var res1 = data[_g1];
 			++_g1;
 			files.push(res1.name);
-			this.loadDuration += res1.duration;
 		}
 		var allFiles = filesFolder.add(resources,"files",files);
 		filesFolder.add(this._fileData,"duration").listen();
@@ -416,6 +425,13 @@ PerfUI.prototype = {
 	}
 	,destroy: function() {
 		this._menu.destroy();
+		this.resourceCount = 0;
+		this.loadDuration = 0;
+		this._data = { FPS : 0, MS : 0, MEMORY : "0"};
+		this._menu = new dat.gui.GUI();
+		this._menu.add(this._data,"FPS",0,60).listen();
+		this._menu.add(this._data,"MS").listen();
+		this._menu.add(this._data,"MEMORY").listen();
 	}
 };
 var Std = function() { };
