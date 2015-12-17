@@ -1,0 +1,27 @@
+-cp src
+-lib dat.GUI
+PerfPlus
+-js dist/perf-plus.js
+-dce std
+-debug
+-D source-map-content
+
+--next
+-cp src
+-lib dat.GUI
+PerfPlus
+-js dist/perf-plus.min.js
+-dce std
+--no-traces
+
+--next
+-cmd haxelib newrepo
+
+--next
+
+-cp sample
+-cp src
+-main Main
+-lib pixijs
+-lib dat.GUI
+-js sample/sample.js

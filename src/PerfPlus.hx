@@ -1,0 +1,105 @@
+import js.html.Window;
+import web.Performance;
+import js.Browser;
+
+@:expose class PerfPlus {
+
+	public static var MEASUREMENT_INTERVAL:Int = 1000;
+	public var currentFps:Float;
+	public var currentMs:Float;
+	public var currentMem:String;
+	public var resourceCount:Int;
+	public var loadDuration:Float;
+
+	var _time:Float;
+	var _startTime:Float;
+	var _prevTime:Float;
+	var _ticks:Int;
+	var _fpsMin:Float;
+	var _fpsMax:Float;
+	var _memCheck:Bool;
+	var _pos:String;
+	var _offset:Float;
+
+	var _perfObj:Performance;
+	var _memoryObj:MemoryInfo;
+
+	var _ui:PerfUI;
+	var _win:Window;
+
+	public function new(?pos = "TR", ?offset:Float = 0) {
+		currentFps = 0;
+		currentMs = 0;
+		currentMem = "0";
+
+		_pos = pos;
+		_offset = offset;
+		_time = 0;
+		_ticks = 0;
+		_fpsMin = Math.POSITIVE_INFINITY;
+		_fpsMax = 0;
+		_startTime = _now();
+		_prevTime = -MEASUREMENT_INTERVAL;
+	}
+
+	public function start(?win:Window) {
+		_ui = new PerfUI();
+		if (win == null) win = Browser.window;
+		_win = win;
+
+		_perfObj = cast _win.performance;
+		_memoryObj = _perfObj.memory;
+		_memCheck = (_perfObj != null && _memoryObj != null && _memoryObj.totalJSHeapSize > 0);
+
+		_win.requestAnimationFrame(cast _tick);
+
+		if (untyped __js__("window.performance").getEntriesByType != null) {
+			_ui.addResources(_perfObj.getEntriesByType("resource"));
+			resourceCount = _ui.resourceCount;
+			loadDuration = _ui.loadDuration;
+		}
+	}
+
+	inline function _now():Float {
+		return (_perfObj != null && _perfObj.now != null) ? _perfObj.now() : Date.now().getTime();
+	}
+
+	function _tick() {
+		var time = _now();
+		_ticks++;
+
+		if (time > _prevTime + MEASUREMENT_INTERVAL) {
+			currentMs = Math.round(time - _startTime);
+
+			_ui.setMs(currentMs);
+
+			currentFps = Math.round((_ticks * 1000) / (time - _prevTime));
+			_fpsMin = Math.min(_fpsMin, currentFps);
+			_fpsMax = Math.max(_fpsMax, currentFps);
+			_ui.setFps(currentFps);
+
+			_prevTime = time;
+			_ticks = 0;
+
+			if (_memCheck) {
+				currentMem = _getFormattedSize(_memoryObj.usedJSHeapSize, 2);
+				_ui.setMem(currentMem);
+			}
+		}
+		_startTime = time;
+
+		_win.requestAnimationFrame(cast _tick);
+	}
+
+	function _getFormattedSize(bytes:Float, ?frac:Int = 0):String {
+		var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+		if (bytes == 0) return "0";
+		var precision = Math.pow(10, frac);
+		var i = Math.floor(Math.log(bytes) / Math.log(1024));
+		return Math.round(bytes * precision / Math.pow(1024, i)) / precision + " " + sizes[i];
+	}
+
+	public function destroy() {
+		_ui.destroy();
+	}
+}

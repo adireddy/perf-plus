@@ -1,0 +1,23 @@
+{
+	"name": "perf-plus.js",
+	"license": "MIT",
+	"classPath": "src",
+	"tags": [
+		"js",
+		"fps",
+		"memory",
+		"stats",
+		"perf-plus.js",
+		"perf",
+		"haxe",
+		"library"
+	],
+	"description": "Advanced performance stats (chrome only).",
+	"contributors": [
+		"adireddy"
+	],
+	"releasenote": "initial release",
+	"version": "0.0.1",
+	"url": "https://github.com/adireddy/perf-plus",
+	"dependencies": {}
+}

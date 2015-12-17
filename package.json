@@ -1,0 +1,40 @@
+{
+	"name": "perf-plus.js",
+	"version": "0.0.1",
+	"description": "Advanced performance stats (chrome only).",
+	"author": "Adi Reddy Mora",
+	"homepage": "http://adireddy.github.io",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/adireddy/perf-plus"
+	},
+	"bugs": {
+		"url": "https://github.com/adireddy/perf-plus/issues"
+	},
+	"keywords": [
+		"js",
+		"fps",
+		"memory",
+		"stats",
+		"perf-plus.js",
+		"perf",
+		"haxe",
+		"library"
+	],
+	"dependencies": {
+		"grunt": "latest",
+		"grunt-cli": "latest",
+		"grunt-contrib-uglify": "latest",
+		"grunt-browserify": "latest"
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"grunt-exec": "^0.4.6",
+		"grunt-haxe": "^0.1.12",
+		"grunt-zip": "^0.16.0"
+	},
+	"main": "dist/perf-plus.min.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	}
+}
