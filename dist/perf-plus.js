@@ -43,7 +43,7 @@ PerfPlus.prototype = {
 		this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
 	}
 	,start: function(win) {
-		this._ui = new PerfUI();
+		this._ui = new PlusUI();
 		if(win == null) win = window;
 		this._win = win;
 		this._perfObj = this._win.performance;
@@ -107,7 +107,7 @@ PerfPlus.prototype = {
 		this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
 	}
 };
-var PerfUI = function() {
+var PlusUI = function() {
 	this.resourceCount = 0;
 	this.loadDuration = 0;
 	this._data = { FPS : 0, MS : 0, MEMORY : "0"};
@@ -116,7 +116,7 @@ var PerfUI = function() {
 	this._menu.add(this._data,"MS").listen();
 	this._menu.add(this._data,"MEMORY").listen();
 };
-PerfUI.prototype = {
+PlusUI.prototype = {
 	_init: function() {
 		this.resourceCount = 0;
 		this.loadDuration = 0;
@@ -148,7 +148,7 @@ PerfUI.prototype = {
 			var res = data[_g];
 			++_g;
 			this.loadDuration += res.duration;
-			var ext = res.name.substring(res.name.lastIndexOf(".") + 1,res.name.length);
+			var ext = this._stripQueryString(res.name);
 			if(HxOverrides.indexOf(types,ext,0) == -1) types.push(ext);
 		}
 		resources.DURATION = this.loadDuration | 0;
@@ -180,7 +180,7 @@ PerfUI.prototype = {
 		while(_g < _g1.length) {
 			var res = _g1[_g];
 			++_g;
-			var ext = res.name.substring(res.name.lastIndexOf(".") + 1,res.name.length);
+			var ext = this._stripQueryString(res.name);
 			if(ext == val) {
 				count++;
 				duration += res.duration;
@@ -199,6 +199,10 @@ PerfUI.prototype = {
 			if(res.name == val) duration += res.duration;
 		}
 		this._fileData.duration = duration;
+	}
+	,_stripQueryString: function(val) {
+		if(val.indexOf("?") > -1) val = val.substring(0,val.indexOf("?")); else val = val;
+		return val.substring(val.lastIndexOf(".") + 1,val.length);
 	}
 	,destroy: function() {
 		this._menu.destroy();

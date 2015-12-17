@@ -160,6 +160,11 @@ Main.main = function() {
 Main.__super__ = pixi_plugins_app_Application;
 Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 	_init: function() {
+		var _g = this;
+		this.stats = new PerfPlus();
+		haxe_Timer.delay(function() {
+			_g.stats.start();
+		},3000);
 		this.backgroundColor = 16777215;
 		this.onUpdate = $bind(this,this._onUpdate);
 		this.onResize = $bind(this,this._onResize);
@@ -266,7 +271,7 @@ PerfPlus.prototype = {
 		this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
 	}
 	,start: function(win) {
-		this._ui = new PerfUI();
+		this._ui = new PlusUI();
 		if(win == null) win = window;
 		this._win = win;
 		this._perfObj = this._win.performance;
@@ -330,7 +335,7 @@ PerfPlus.prototype = {
 		this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
 	}
 };
-var PerfUI = function() {
+var PlusUI = function() {
 	this.resourceCount = 0;
 	this.loadDuration = 0;
 	this._data = { FPS : 0, MS : 0, MEMORY : "0"};
@@ -339,7 +344,7 @@ var PerfUI = function() {
 	this._menu.add(this._data,"MS").listen();
 	this._menu.add(this._data,"MEMORY").listen();
 };
-PerfUI.prototype = {
+PlusUI.prototype = {
 	_init: function() {
 		this.resourceCount = 0;
 		this.loadDuration = 0;
@@ -371,7 +376,7 @@ PerfUI.prototype = {
 			var res = data[_g];
 			++_g;
 			this.loadDuration += res.duration;
-			var ext = res.name.substring(res.name.lastIndexOf(".") + 1,res.name.length);
+			var ext = this._stripQueryString(res.name);
 			if(HxOverrides.indexOf(types,ext,0) == -1) types.push(ext);
 		}
 		resources.DURATION = this.loadDuration | 0;
@@ -403,7 +408,7 @@ PerfUI.prototype = {
 		while(_g < _g1.length) {
 			var res = _g1[_g];
 			++_g;
-			var ext = res.name.substring(res.name.lastIndexOf(".") + 1,res.name.length);
+			var ext = this._stripQueryString(res.name);
 			if(ext == val) {
 				count++;
 				duration += res.duration;
@@ -423,6 +428,10 @@ PerfUI.prototype = {
 		}
 		this._fileData.duration = duration;
 	}
+	,_stripQueryString: function(val) {
+		if(val.indexOf("?") > -1) val = val.substring(0,val.indexOf("?")); else val = val;
+		return val.substring(val.lastIndexOf(".") + 1,val.length);
+	}
 	,destroy: function() {
 		this._menu.destroy();
 		this.resourceCount = 0;
@@ -437,6 +446,29 @@ PerfUI.prototype = {
 var Std = function() { };
 Std.random = function(x) {
 	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
+};
+var haxe_Timer = function(time_ms) {
+	var me = this;
+	this.id = setInterval(function() {
+		me.run();
+	},time_ms);
+};
+haxe_Timer.delay = function(f,time_ms) {
+	var t = new haxe_Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+};
+haxe_Timer.prototype = {
+	stop: function() {
+		if(this.id == null) return;
+		clearInterval(this.id);
+		this.id = null;
+	}
+	,run: function() {
+	}
 };
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }

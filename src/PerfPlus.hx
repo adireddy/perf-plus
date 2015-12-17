@@ -23,7 +23,7 @@ import js.Browser;
 	var _perfObj:Performance;
 	var _memoryObj:MemoryInfo;
 
-	var _ui:PerfUI;
+	var _ui:PlusUI;
 	var _win:Window;
 
 	var _totalFps:Float;
@@ -51,7 +51,7 @@ import js.Browser;
 	}
 
 	public function start(?win:Window) {
-		_ui = new PerfUI();
+		_ui = new PlusUI();
 		if (win == null) win = Browser.window;
 		_win = win;
 

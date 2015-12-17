@@ -2,7 +2,7 @@ import js.html.PerformanceResourceTiming;
 import dat.controllers.Controller;
 import dat.gui.GUI;
 
-class PerfUI {
+class PlusUI {
 
 	var _menu:GUI;
 	var _data:Dynamic;
@@ -51,7 +51,7 @@ class PerfUI {
 		var types:Array<String> = [];
 		for (res in data) {
 			loadDuration += res.duration;
-			var ext = res.name.substring(res.name.lastIndexOf(".") + 1, res.name.length);
+			var ext = _stripQueryString(res.name);
 			if (types.indexOf(ext) == -1) types.push(ext);
 		}
 		resources.DURATION = Std.int(loadDuration);
@@ -79,7 +79,7 @@ class PerfUI {
 		var count:Int = 0;
 		var duration:Float = 0;
 		for (res in _resourcesData) {
-			var ext = res.name.substring(res.name.lastIndexOf(".") + 1, res.name.length);
+			var ext = _stripQueryString(res.name);
 			if (ext == val) {
 				count++;
 				duration += res.duration;
@@ -97,6 +97,11 @@ class PerfUI {
 			}
 		}
 		_fileData.duration = duration;
+	}
+
+	inline function _stripQueryString(val:String):String {
+		val = val.indexOf("?") > -1 ? val.substring(0, val.indexOf("?")) : val;
+		return val.substring(val.lastIndexOf(".") + 1, val.length);
 	}
 
 	public function destroy() {
