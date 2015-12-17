@@ -1,3 +1,3 @@
-javascript:(function(){var stats;var script=document.createElement('script');document.head.appendChild(script);script.onload=function(){stats = new PerfPlus();stats.start();}
-    script.src='//rawgit.com/adireddy/perf-plus/da48275de36c60bef490c3ef7ccdd6bdafd9583a/dist/perf-plus.min.js';
+javascript:(function(){var script=document.createElement('script');document.head.appendChild(script);script.onload=function(){window.perf = new PerfPlus();window.perf.start();}
+    script.src='//rawgit.com/adireddy/perf-plus/2e40b794209b2bb23b680ecc9f48e0c377e5dd3e/dist/perf-plus.min.js';
 }())
