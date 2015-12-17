@@ -7,11 +7,11 @@ Tested in **Chrome**, should also work in **Firefox**, **IE** & **Opera**.
 
 Resource details not supported in **Safari**.
 
-### Installation
+## Installation
 
 `npm install perf-plus.js`
 
-### API
+## API
 
 `var perf = new PerfPlus();`
 
@@ -34,13 +34,13 @@ To destroy stats call
 
 `perf.destroy();`
 
-### UI
+## UI
 
 <img alt="basic" src="https://raw.githubusercontent.com/adireddy/perf-plus/master/assets/ui.png"/>
 
 Powered by [dat.GUI](https://github.com/dataarts/dat.gui)
 
-### Bookmarklet
+## Bookmarklet
 
 ```js
 javascript:(function(){var script=document.createElement('script');document.head.appendChild(script);script.onload=function(){window.perf = new PerfPlus();window.perf.start();}
@@ -48,7 +48,7 @@ javascript:(function(){var script=document.createElement('script');document.head
 }())
 ```
 
-### Licensing Information
+## Licensing Information
 
 <a rel="license" href="http://opensource.org/licenses/MIT">
 <img alt="MIT license" height="40" src="http://upload.wikimedia.org/wikipedia/commons/c/c3/License_icon-mit.svg" /></a>
