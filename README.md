@@ -9,7 +9,7 @@ Resource details not supported in **Safari**.
 
 ## Installation
 
-`npm install perf-plus.js`
+[![npm install perf-plus.js](https://nodei.co/npm/perf-plus.js.png?downloadRank=true&downloads=true&stars=true)](https://www.npmjs.com/package/perf-plus.js)
 
 ## API
 
