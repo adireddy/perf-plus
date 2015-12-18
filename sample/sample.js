@@ -349,10 +349,6 @@ PlusUI.prototype = {
 		this.resourceCount = 0;
 		this.loadDuration = 0;
 		this._data = { FPS : 0, MS : 0, MEMORY : "0"};
-		this._menu = new dat.gui.GUI();
-		this._menu.add(this._data,"FPS",0,60).listen();
-		this._menu.add(this._data,"MS").listen();
-		this._menu.add(this._data,"MEMORY").listen();
 	}
 	,setFps: function(val) {
 		if(val >= 0) this._data.FPS = val;
@@ -437,10 +433,6 @@ PlusUI.prototype = {
 		this.resourceCount = 0;
 		this.loadDuration = 0;
 		this._data = { FPS : 0, MS : 0, MEMORY : "0"};
-		this._menu = new dat.gui.GUI();
-		this._menu.add(this._data,"FPS",0,60).listen();
-		this._menu.add(this._data,"MS").listen();
-		this._menu.add(this._data,"MEMORY").listen();
 	}
 };
 var Std = function() { };

@@ -15,16 +15,16 @@ class PlusUI {
 
 	public function new() {
 		_init();
+		_menu = new GUI();
+		_menu.add(_data, "FPS", 0, 60).listen();
+		_menu.add(_data, "MS").listen();
+		_menu.add(_data, "MEMORY").listen();
 	}
 
 	inline function _init() {
 		resourceCount = 0;
 		loadDuration = 0;
 		_data = { FPS: 0, MS: 0, MEMORY: "0" };
-		_menu = new GUI();
-		_menu.add(_data, "FPS", 0, 60).listen();
-		_menu.add(_data, "MS").listen();
-		_menu.add(_data, "MEMORY").listen();
 	}
 
 	public function setFps(val:Float) {
