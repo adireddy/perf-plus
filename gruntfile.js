@@ -11,7 +11,7 @@ module.exports = function (grunt) {
 
         browserify: {
             pack: {
-                src: ["dist/perf-plus.js", "libs/dat.gui.min.js"],
+                src: ["dist/perf-plus.js", "libs/dat.gui.js"],
                 dest: "dist/perf-plus.js",
             }
         },
@@ -24,7 +24,7 @@ module.exports = function (grunt) {
 			},
 			target: {
 				files: {
-					"dist/perf-plus.min.js": ["dist/perf-plus.min.js", "libs/dat.gui.min.js"]
+					"dist/perf-plus.min.js": ["dist/perf-plus.min.js", "libs/dat.gui.js"]
 				}
 			}
 		},
