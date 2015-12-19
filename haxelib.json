@@ -12,7 +12,7 @@
 		"haxe",
 		"library"
 	],
-	"description": "Advanced performance stats (chrome only).",
+	"description": "Advanced stats library to monitor, frame time, memory and resource details.",
 	"contributors": [
 		"adireddy"
 	],

@@ -1,5 +1,5 @@
 # ![perf plus logo](https://raw.githubusercontent.com/adireddy/perf-plus/master/assets/logo.png)
-Advances stats library to monitor, frame time, memory and resource details.
+Advanced stats library to monitor, frame time, memory and resource details.
 
 Uses `performance.now()` with `Date.now()` fallback on older browsers.
 
