@@ -44,7 +44,7 @@ Powered by [dat.GUI](https://github.com/dataarts/dat.gui)
 
 ```js
 javascript:(function(){
-    var script=document.createElement('script');script.src='//cdn.rawgit.com/adireddy/perf-plus/8d6cda73acd17648571c2afa7808931d53161ef9/dist/perf-plus.min.js';document.head.appendChild(script);script.onload=function(){window.perf = new PerfPlus();window.perf.start();}
+    var script=document.createElement('script');script.src='//cdn.rawgit.com/adireddy/perf-plus/96dc979152beb52d6761b3b6d898bd923c6c8dbb/dist/perf-plus.min.js';document.head.appendChild(script);script.onload=function(){window.perf = new PerfPlus();window.perf.start();}
 }())
 ```
 
