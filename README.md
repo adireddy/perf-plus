@@ -36,7 +36,7 @@ To destroy stats call
 
 ## UI
 
-<img alt="basic" src="https://raw.githubusercontent.com/adireddy/perf-plus/master/assets/ui.png"/>
+<img alt="basic" src="https://raw.githubusercontent.com/adireddy/perf-plus/master/assets/ui.png" width="245" height="159" />
 
 Powered by [dat.GUI](https://github.com/dataarts/dat.gui)
 
