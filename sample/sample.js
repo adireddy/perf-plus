@@ -160,11 +160,7 @@ Main.main = function() {
 Main.__super__ = pixi_plugins_app_Application;
 Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 	_init: function() {
-		var _g = this;
 		this.stats = new PerfPlus();
-		haxe_Timer.delay(function() {
-			_g.stats.start();
-		},3000);
 		this.backgroundColor = 16777215;
 		this.onUpdate = $bind(this,this._onUpdate);
 		this.onResize = $bind(this,this._onResize);
@@ -241,11 +237,15 @@ Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 		this.maxY = window.innerHeight;
 	}
 });
-var PerfPlus = $hx_exports.PerfPlus = function() {
+var PerfPlus = $hx_exports.PerfPlus = function(win) {
+	var _g = this;
 	this.currentFps = 0;
 	this.averageFps = 0;
 	this.currentMs = 0;
 	this.currentMem = "0";
+	this.resourceCount = 0;
+	this.resourceLoadDuration = 0;
+	this.pageLoadTime = 0;
 	this._totalFps = 0;
 	this._updateIntervalCount = 0;
 	this._time = 0;
@@ -254,6 +254,24 @@ var PerfPlus = $hx_exports.PerfPlus = function() {
 	this.maxFps = 0;
 	if(this._perfObj != null && ($_=this._perfObj,$bind($_,$_.now)) != null) this._startTime = this._perfObj.now(); else this._startTime = new Date().getTime();
 	this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
+	if(win == null) win = window;
+	this._win = win;
+	this._win.onload = function() {
+		_g._ui = new PlusUI();
+		_g._perfObj = _g._win.performance;
+		_g._memoryObj = _g._perfObj.memory;
+		_g._memCheck = _g._perfObj != null && _g._memoryObj != null && _g._memoryObj.totalJSHeapSize > 0;
+		_g._win.requestAnimationFrame($bind(_g,_g._tick));
+		if(window.performance.getEntriesByType != null) {
+			_g._ui.addResources(_g._perfObj.getEntriesByType("resource"));
+			_g.resourceCount = _g._ui.resourceCount;
+			_g.resourceLoadDuration = _g._ui.resourceLoadDuration;
+		}
+		if(window.performance.timing != null) {
+			_g.pageLoadTime = _g._perfObj.timing.domComplete - _g._perfObj.timing.domLoading;
+			_g._ui.setTiming(_g._perfObj.timing.domComplete - _g._perfObj.timing.domLoading);
+		}
+	};
 };
 PerfPlus.prototype = {
 	_init: function() {
@@ -261,6 +279,9 @@ PerfPlus.prototype = {
 		this.averageFps = 0;
 		this.currentMs = 0;
 		this.currentMem = "0";
+		this.resourceCount = 0;
+		this.resourceLoadDuration = 0;
+		this.pageLoadTime = 0;
 		this._totalFps = 0;
 		this._updateIntervalCount = 0;
 		this._time = 0;
@@ -269,20 +290,6 @@ PerfPlus.prototype = {
 		this.maxFps = 0;
 		if(this._perfObj != null && ($_=this._perfObj,$bind($_,$_.now)) != null) this._startTime = this._perfObj.now(); else this._startTime = new Date().getTime();
 		this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
-	}
-	,start: function(win) {
-		this._ui = new PlusUI();
-		if(win == null) win = window;
-		this._win = win;
-		this._perfObj = this._win.performance;
-		this._memoryObj = this._perfObj.memory;
-		this._memCheck = this._perfObj != null && this._memoryObj != null && this._memoryObj.totalJSHeapSize > 0;
-		this._win.requestAnimationFrame($bind(this,this._tick));
-		if(window.performance.getEntriesByType != null) {
-			this._ui.addResources(this._perfObj.getEntriesByType("resource"));
-			this.resourceCount = this._ui.resourceCount;
-			this.loadDuration = this._ui.loadDuration;
-		}
 	}
 	,_now: function() {
 		if(this._perfObj != null && ($_=this._perfObj,$bind($_,$_.now)) != null) return this._perfObj.now(); else return new Date().getTime();
@@ -325,6 +332,9 @@ PerfPlus.prototype = {
 		this.averageFps = 0;
 		this.currentMs = 0;
 		this.currentMem = "0";
+		this.resourceCount = 0;
+		this.resourceLoadDuration = 0;
+		this.pageLoadTime = 0;
 		this._totalFps = 0;
 		this._updateIntervalCount = 0;
 		this._time = 0;
@@ -337,24 +347,28 @@ PerfPlus.prototype = {
 };
 var PlusUI = function() {
 	this.resourceCount = 0;
-	this.loadDuration = 0;
-	this._data = { FPS : 0, MS : 0, MEMORY : "0"};
+	this.resourceLoadDuration = 0;
+	this._data = { FPS : 0, MS : 0, TIMING : 0, MEMORY : "0"};
 	this._menu = new dat.gui.GUI();
 	this._menu.add(this._data,"FPS",0,60).listen();
 	this._menu.add(this._data,"MS").listen();
+	this._menu.add(this._data,"TIMING").listen();
 	this._menu.add(this._data,"MEMORY").listen();
 };
 PlusUI.prototype = {
 	_init: function() {
 		this.resourceCount = 0;
-		this.loadDuration = 0;
-		this._data = { FPS : 0, MS : 0, MEMORY : "0"};
+		this.resourceLoadDuration = 0;
+		this._data = { FPS : 0, MS : 0, TIMING : 0, MEMORY : "0"};
 	}
 	,setFps: function(val) {
 		if(val >= 0) this._data.FPS = val;
 	}
 	,setMs: function(val) {
 		if(val >= 0) this._data.MS = val;
+	}
+	,setTiming: function(val) {
+		this._data.TIMING = val;
 	}
 	,setMem: function(val) {
 		this._data.MEMORY = val;
@@ -371,11 +385,11 @@ PlusUI.prototype = {
 		while(_g < data.length) {
 			var res = data[_g];
 			++_g;
-			this.loadDuration += res.duration;
+			this.resourceLoadDuration += res.duration;
 			var ext = this._stripQueryString(res.name);
 			if(HxOverrides.indexOf(types,ext,0) == -1) types.push(ext);
 		}
-		resources.DURATION = this.loadDuration | 0;
+		resources.DURATION = this.resourceLoadDuration | 0;
 		folder.add(resources,"DURATION");
 		var fileTypes = folder.add(resources,"types",types);
 		folder.add(this._types,"count").listen();
@@ -414,15 +428,16 @@ PlusUI.prototype = {
 		this._types.duration = duration;
 	}
 	,_fileStats: function(val) {
-		var duration = 0;
 		var _g = 0;
 		var _g1 = this._resourcesData;
 		while(_g < _g1.length) {
 			var res = _g1[_g];
 			++_g;
-			if(res.name == val) duration += res.duration;
+			if(res.name == val) {
+				this._fileData.duration = res.duration;
+				break;
+			}
 		}
-		this._fileData.duration = duration;
 	}
 	,_stripQueryString: function(val) {
 		if(val.indexOf("?") > -1) val = val.substring(0,val.indexOf("?")); else val = val;
@@ -431,36 +446,13 @@ PlusUI.prototype = {
 	,destroy: function() {
 		this._menu.destroy();
 		this.resourceCount = 0;
-		this.loadDuration = 0;
-		this._data = { FPS : 0, MS : 0, MEMORY : "0"};
+		this.resourceLoadDuration = 0;
+		this._data = { FPS : 0, MS : 0, TIMING : 0, MEMORY : "0"};
 	}
 };
 var Std = function() { };
 Std.random = function(x) {
 	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
-};
-var haxe_Timer = function(time_ms) {
-	var me = this;
-	this.id = setInterval(function() {
-		me.run();
-	},time_ms);
-};
-haxe_Timer.delay = function(f,time_ms) {
-	var t = new haxe_Timer(time_ms);
-	t.run = function() {
-		t.stop();
-		f();
-	};
-	return t;
-};
-haxe_Timer.prototype = {
-	stop: function() {
-		if(this.id == null) return;
-		clearInterval(this.id);
-		this.id = null;
-	}
-	,run: function() {
-	}
 };
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }

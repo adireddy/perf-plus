@@ -15,9 +15,7 @@ Resource details not supported in **Safari**.
 
 `var perf = new PerfPlus();`
 
-Make sure you call `start` method after all the resources are loaded for accurate resource details.
-
-`perf.start();`
+Note that it will only start on window load event to report accurate resource details.
 
 The following data is available:
 
@@ -28,7 +26,8 @@ The following data is available:
 - `perf.currentMs` - current time between frames in milli seconds
 - `perf.currentMem` - current memory usage (Chrome only)
 - `perf.resourceCount` - total resources loaded by the app
-- `perf.loadDuration` - loadDuration of all the resources
+- `perf.resourceLoadDuration` - loadDuration of all the resources
+- `perf.resourceLoadDuration` - loadDuration of all the resources
 
 To destroy stats call
 

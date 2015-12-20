@@ -11,20 +11,21 @@ class PlusUI {
 	var _resourcesData:Array<PerformanceResourceTiming>;
 
 	public var resourceCount(default, null):Int;
-	public var loadDuration(default, null):Float;
+	public var resourceLoadDuration(default, null):Float;
 
 	public function new() {
 		_init();
 		_menu = new GUI();
 		_menu.add(_data, "FPS", 0, 60).listen();
 		_menu.add(_data, "MS").listen();
+		_menu.add(_data, "TIMING").listen();
 		_menu.add(_data, "MEMORY").listen();
 	}
 
 	inline function _init() {
 		resourceCount = 0;
-		loadDuration = 0;
-		_data = { FPS: 0, MS: 0, MEMORY: "0" };
+		resourceLoadDuration = 0;
+		_data = { FPS: 0, MS: 0, TIMING: 0, MEMORY: "0" };
 	}
 
 	public function setFps(val:Float) {
@@ -33,6 +34,10 @@ class PlusUI {
 
 	public function setMs(val:Float) {
 		if (val >= 0) _data.MS = val;
+	}
+
+	public function setTiming(val:Float) {
+		_data.TIMING = val;
 	}
 
 	public function setMem(val:String) {
@@ -50,11 +55,11 @@ class PlusUI {
 
 		var types:Array<String> = [];
 		for (res in data) {
-			loadDuration += res.duration;
+			resourceLoadDuration += res.duration;
 			var ext = _stripQueryString(res.name);
 			if (types.indexOf(ext) == -1) types.push(ext);
 		}
-		resources.DURATION = Std.int(loadDuration);
+		resources.DURATION = Std.int(resourceLoadDuration);
 		folder.add(resources, "DURATION");
 
 		var fileTypes = folder.add(resources, "types", types);
@@ -90,13 +95,12 @@ class PlusUI {
 	}
 
 	function _fileStats(val) {
-		var duration:Float = 0;
 		for (res in _resourcesData) {
 			if (res.name == val) {
-				duration += res.duration;
+				_fileData.duration = res.duration;
+				break;
 			}
 		}
-		_fileData.duration = duration;
 	}
 
 	inline function _stripQueryString(val:String):String {

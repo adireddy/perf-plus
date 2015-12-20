@@ -12,7 +12,8 @@ import js.Browser;
 	public var currentMs:Float;
 	public var currentMem:String;
 	public var resourceCount:Int;
-	public var loadDuration:Float;
+	public var resourceLoadDuration:Float;
+	public var pageLoadTime:Float;
 
 	var _time:Float;
 	var _startTime:Float;
@@ -29,8 +30,31 @@ import js.Browser;
 	var _totalFps:Float;
 	var _updateIntervalCount:Float;
 
-	public function new() {
+	public function new(?win:Window) {
 		_init();
+		if (win == null) win = Browser.window;
+		_win = win;
+
+		_win.onload = function() {
+			_ui = new PlusUI();
+
+			_perfObj = cast _win.performance;
+			_memoryObj = _perfObj.memory;
+			_memCheck = (_perfObj != null && _memoryObj != null && _memoryObj.totalJSHeapSize > 0);
+
+			_win.requestAnimationFrame(cast _tick);
+
+			if (untyped __js__("window.performance").getEntriesByType != null) {
+				_ui.addResources(_perfObj.getEntriesByType("resource"));
+				resourceCount = _ui.resourceCount;
+				resourceLoadDuration = _ui.resourceLoadDuration;
+			}
+
+			if (untyped __js__("window.performance").timing != null) {
+				pageLoadTime = _perfObj.timing.domComplete - _perfObj.timing.domLoading;
+				_ui.setTiming(_perfObj.timing.domComplete - _perfObj.timing.domLoading);
+			}
+		}
 	}
 
 	inline function _init() {
@@ -38,6 +62,9 @@ import js.Browser;
 		averageFps = 0;
 		currentMs = 0;
 		currentMem = "0";
+		resourceCount = 0;
+		resourceLoadDuration = 0;
+		pageLoadTime = 0;
 
 		_totalFps = 0;
 		_updateIntervalCount = 0;
@@ -48,24 +75,6 @@ import js.Browser;
 		maxFps = 0;
 		_startTime = _now();
 		_prevTime = -MEASUREMENT_INTERVAL;
-	}
-
-	public function start(?win:Window) {
-		_ui = new PlusUI();
-		if (win == null) win = Browser.window;
-		_win = win;
-
-		_perfObj = cast _win.performance;
-		_memoryObj = _perfObj.memory;
-		_memCheck = (_perfObj != null && _memoryObj != null && _memoryObj.totalJSHeapSize > 0);
-
-		_win.requestAnimationFrame(cast _tick);
-
-		if (untyped __js__("window.performance").getEntriesByType != null) {
-			_ui.addResources(_perfObj.getEntriesByType("resource"));
-			resourceCount = _ui.resourceCount;
-			loadDuration = _ui.loadDuration;
-		}
 	}
 
 	inline function _now():Float {
