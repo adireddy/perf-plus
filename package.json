@@ -1,6 +1,6 @@
 {
 	"name": "perf-plus.js",
-	"version": "0.0.9",
+	"version": "0.1.0",
 	"description": "Advanced stats library to monitor, frame time, memory and resource details.",
 	"author": "Adi Reddy Mora",
 	"homepage": "http://adireddy.github.io",
