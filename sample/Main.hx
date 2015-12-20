@@ -32,6 +32,10 @@ class Main extends Application {
 
 	function _init() {
 		stats = new PerfPlus();
+		haxe.Timer.delay(function() {
+			stats.start();
+		}, 3000);
+
 		backgroundColor = 0xFFFFFF;
 		onUpdate = _onUpdate;
 		onResize = _onResize;
