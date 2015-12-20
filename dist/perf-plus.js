@@ -14,7 +14,6 @@ HxOverrides.indexOf = function(a,obj,i) {
 	return -1;
 };
 var PerfPlus = $hx_exports.PerfPlus = function(win) {
-	var _g = this;
 	this.currentFps = 0;
 	this.averageFps = 0;
 	this.currentMs = 0;
@@ -32,25 +31,25 @@ var PerfPlus = $hx_exports.PerfPlus = function(win) {
 	this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
 	if(win == null) win = window;
 	this._win = win;
-	this._win.onload = function() {
-		_g._ui = new PlusUI();
-		_g._perfObj = _g._win.performance;
-		_g._memoryObj = _g._perfObj.memory;
-		_g._memCheck = _g._perfObj != null && _g._memoryObj != null && _g._memoryObj.totalJSHeapSize > 0;
-		_g._win.requestAnimationFrame($bind(_g,_g._tick));
-		if(window.performance.getEntriesByType != null) {
-			_g._ui.addResources(_g._perfObj.getEntriesByType("resource"));
-			_g.resourceCount = _g._ui.resourceCount;
-			_g.resourceLoadDuration = _g._ui.resourceLoadDuration;
-		}
-		if(window.performance.timing != null) {
-			_g.pageLoadTime = _g._perfObj.timing.domComplete - _g._perfObj.timing.domLoading;
-			_g._ui.setTiming(_g._perfObj.timing.domComplete - _g._perfObj.timing.domLoading);
-		}
-	};
 };
 PerfPlus.prototype = {
-	_init: function() {
+	start: function() {
+		this._ui = new PlusUI();
+		this._perfObj = this._win.performance;
+		this._memoryObj = this._perfObj.memory;
+		this._memCheck = this._perfObj != null && this._memoryObj != null && this._memoryObj.totalJSHeapSize > 0;
+		this._win.requestAnimationFrame($bind(this,this._tick));
+		if(window.performance.getEntriesByType != null) {
+			this._ui.addResources(this._perfObj.getEntriesByType("resource"));
+			this.resourceCount = this._ui.resourceCount;
+			this.resourceLoadDuration = this._ui.resourceLoadDuration;
+		}
+		if(window.performance.timing != null) {
+			this.pageLoadTime = this._perfObj.timing.domComplete - this._perfObj.timing.fetchStart;
+			this._ui.setTiming(this.pageLoadTime);
+		}
+	}
+	,_init: function() {
 		this.currentFps = 0;
 		this.averageFps = 0;
 		this.currentMs = 0;

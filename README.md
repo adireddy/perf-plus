@@ -15,7 +15,9 @@ Resource details not supported in **Safari**.
 
 `var perf = new PerfPlus();`
 
-Note that it will only start on window load event to report accurate resource details.
+Make sure you call `start` method after all the resources are loaded for accurate resource details.
+
+`perf.start();`
 
 The following data is available:
 
@@ -27,7 +29,7 @@ The following data is available:
 - `perf.currentMem` - current memory usage (Chrome only)
 - `perf.resourceCount` - total resources loaded by the app
 - `perf.resourceLoadDuration` - loadDuration of all the resources
-- `perf.resourceLoadDuration` - loadDuration of all the resources
+- `perf.pageLoadTime` - dom load time
 
 To destroy stats call
 
@@ -43,7 +45,7 @@ Powered by [dat.GUI](https://github.com/dataarts/dat.gui)
 
 ```js
 javascript:(function(){
-    var script=document.createElement('script');script.src='//cdn.rawgit.com/adireddy/perf-plus/96dc979152beb52d6761b3b6d898bd923c6c8dbb/dist/perf-plus.min.js';document.head.appendChild(script);script.onload=function(){window.perf = new PerfPlus();window.perf.start();}
+    var script=document.createElement('script');script.src='//cdn.rawgit.com/adireddy/perf-plus/53db290a194b91af93d1fb34d3d3b602fbfe74d3/dist/perf-plus.min.js';document.head.appendChild(script);script.onload=function(){window.perf = new PerfPlus();window.perf.start();}
 }())
 ```
 

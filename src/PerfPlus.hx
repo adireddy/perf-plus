@@ -34,26 +34,26 @@ import js.Browser;
 		_init();
 		if (win == null) win = Browser.window;
 		_win = win;
+	}
 
-		_win.onload = function() {
-			_ui = new PlusUI();
+	public function start() {
+		_ui = new PlusUI();
 
-			_perfObj = cast _win.performance;
-			_memoryObj = _perfObj.memory;
-			_memCheck = (_perfObj != null && _memoryObj != null && _memoryObj.totalJSHeapSize > 0);
+		_perfObj = cast _win.performance;
+		_memoryObj = _perfObj.memory;
+		_memCheck = (_perfObj != null && _memoryObj != null && _memoryObj.totalJSHeapSize > 0);
 
-			_win.requestAnimationFrame(cast _tick);
+		_win.requestAnimationFrame(cast _tick);
 
-			if (untyped __js__("window.performance").getEntriesByType != null) {
-				_ui.addResources(_perfObj.getEntriesByType("resource"));
-				resourceCount = _ui.resourceCount;
-				resourceLoadDuration = _ui.resourceLoadDuration;
-			}
+		if (untyped __js__("window.performance").getEntriesByType != null) {
+			_ui.addResources(_perfObj.getEntriesByType("resource"));
+			resourceCount = _ui.resourceCount;
+			resourceLoadDuration = _ui.resourceLoadDuration;
+		}
 
-			if (untyped __js__("window.performance").timing != null) {
-				pageLoadTime = _perfObj.timing.domComplete - _perfObj.timing.domLoading;
-				_ui.setTiming(_perfObj.timing.domComplete - _perfObj.timing.domLoading);
-			}
+		if (untyped __js__("window.performance").timing != null) {
+			pageLoadTime = _perfObj.timing.domComplete - _perfObj.timing.fetchStart;
+			_ui.setTiming(pageLoadTime);
 		}
 	}
 

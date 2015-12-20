@@ -160,7 +160,11 @@ Main.main = function() {
 Main.__super__ = pixi_plugins_app_Application;
 Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 	_init: function() {
+		var _g = this;
 		this.stats = new PerfPlus();
+		haxe_Timer.delay(function() {
+			_g.stats.start();
+		},3000);
 		this.backgroundColor = 16777215;
 		this.onUpdate = $bind(this,this._onUpdate);
 		this.onResize = $bind(this,this._onResize);
@@ -238,7 +242,6 @@ Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 	}
 });
 var PerfPlus = $hx_exports.PerfPlus = function(win) {
-	var _g = this;
 	this.currentFps = 0;
 	this.averageFps = 0;
 	this.currentMs = 0;
@@ -256,25 +259,25 @@ var PerfPlus = $hx_exports.PerfPlus = function(win) {
 	this._prevTime = -PerfPlus.MEASUREMENT_INTERVAL;
 	if(win == null) win = window;
 	this._win = win;
-	this._win.onload = function() {
-		_g._ui = new PlusUI();
-		_g._perfObj = _g._win.performance;
-		_g._memoryObj = _g._perfObj.memory;
-		_g._memCheck = _g._perfObj != null && _g._memoryObj != null && _g._memoryObj.totalJSHeapSize > 0;
-		_g._win.requestAnimationFrame($bind(_g,_g._tick));
-		if(window.performance.getEntriesByType != null) {
-			_g._ui.addResources(_g._perfObj.getEntriesByType("resource"));
-			_g.resourceCount = _g._ui.resourceCount;
-			_g.resourceLoadDuration = _g._ui.resourceLoadDuration;
-		}
-		if(window.performance.timing != null) {
-			_g.pageLoadTime = _g._perfObj.timing.domComplete - _g._perfObj.timing.domLoading;
-			_g._ui.setTiming(_g._perfObj.timing.domComplete - _g._perfObj.timing.domLoading);
-		}
-	};
 };
 PerfPlus.prototype = {
-	_init: function() {
+	start: function() {
+		this._ui = new PlusUI();
+		this._perfObj = this._win.performance;
+		this._memoryObj = this._perfObj.memory;
+		this._memCheck = this._perfObj != null && this._memoryObj != null && this._memoryObj.totalJSHeapSize > 0;
+		this._win.requestAnimationFrame($bind(this,this._tick));
+		if(window.performance.getEntriesByType != null) {
+			this._ui.addResources(this._perfObj.getEntriesByType("resource"));
+			this.resourceCount = this._ui.resourceCount;
+			this.resourceLoadDuration = this._ui.resourceLoadDuration;
+		}
+		if(window.performance.timing != null) {
+			this.pageLoadTime = this._perfObj.timing.domComplete - this._perfObj.timing.fetchStart;
+			this._ui.setTiming(this.pageLoadTime);
+		}
+	}
+	,_init: function() {
 		this.currentFps = 0;
 		this.averageFps = 0;
 		this.currentMs = 0;
@@ -453,6 +456,29 @@ PlusUI.prototype = {
 var Std = function() { };
 Std.random = function(x) {
 	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
+};
+var haxe_Timer = function(time_ms) {
+	var me = this;
+	this.id = setInterval(function() {
+		me.run();
+	},time_ms);
+};
+haxe_Timer.delay = function(f,time_ms) {
+	var t = new haxe_Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+};
+haxe_Timer.prototype = {
+	stop: function() {
+		if(this.id == null) return;
+		clearInterval(this.id);
+		this.id = null;
+	}
+	,run: function() {
+	}
 };
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
