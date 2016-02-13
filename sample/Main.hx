@@ -31,10 +31,17 @@ class Main extends Application {
 	}
 
 	function _init() {
-		stats = new PerfPlus();
-		haxe.Timer.delay(function() {
-			stats.start();
-		}, 3000);
+		stats = new PerfPlus(Browser.window, false);
+		stats.doFileSizePingTest("../assets/logo.png", 12037, function() {
+			haxe.Timer.delay(function() {
+				stats.start();
+				/*trace(stats.resourceCount);
+				trace(stats.pageLoadTime);
+				trace(stats.resourceLoadDuration);
+				trace(stats.types);*/
+				trace(stats.files);
+			}, 1000);
+		});
 
 		backgroundColor = 0xFFFFFF;
 		onUpdate = _onUpdate;
