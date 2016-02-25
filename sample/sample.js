@@ -162,12 +162,9 @@ Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 	_init: function() {
 		var _g = this;
 		this.stats = new PerfPlus(window,false);
-		this.stats.doFileSizePingTest("../assets/logo.png",12037,function() {
-			haxe_Timer.delay(function() {
-				_g.stats.start();
-				console.log(_g.stats.files);
-			},1000);
-		});
+		haxe_Timer.delay(function() {
+			_g.stats.start();
+		},1000);
 		this.backgroundColor = 16777215;
 		this.onUpdate = $bind(this,this._onUpdate);
 		this.onResize = $bind(this,this._onResize);
@@ -268,20 +265,7 @@ var PerfPlus = $hx_exports.PerfPlus = function(win,showUI) {
 	this._perfObj = this._win.performance;
 };
 PerfPlus.prototype = {
-	doFileSizePingTest: function(pingUrl,originalSize,callback) {
-		var _g = this;
-		var startTime;
-		if(this._perfObj != null && ($_=this._perfObj,$bind($_,$_.now)) != null) startTime = this._perfObj.now(); else startTime = new Date().getTime();
-		var request = new XMLHttpRequest();
-		request.open("GET",pingUrl,true);
-		request.onload = function() {
-			_g._bytesPerMs = originalSize / ((_g._perfObj != null && ($_=_g._perfObj,$bind($_,$_.now)) != null?_g._perfObj.now():new Date().getTime()) - startTime);
-			if(callback != null) callback();
-		};
-		request.onerror = callback;
-		request.send();
-	}
-	,_addResources: function() {
+	_addResources: function() {
 		if(window.performance.getEntriesByType != null) {
 			var data = this._perfObj.getEntriesByType("resource");
 			this._ui.addResources(data,this._bytesPerMs);

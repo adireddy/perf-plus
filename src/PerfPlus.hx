@@ -53,18 +53,6 @@ import js.Browser;
 		_perfObj = cast _win.performance;
 	}
 
-	public function doFileSizePingTest(pingUrl:String, originalSize:Float, ?callback:Void -> Void) {
-		var startTime = _now();
-		var request = new XMLHttpRequest();
-		request.open("GET", pingUrl, true);
-		request.onload = function() {
-			_bytesPerMs = originalSize / (_now() - startTime);
-			if (callback != null) callback();
-		};
-		request.onerror = callback;
-		request.send();
-	}
-
 	inline function _addResources() {
 		if (untyped __js__("window.performance").getEntriesByType != null) {
 			var data = _perfObj.getEntriesByType("resource");
