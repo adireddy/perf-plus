@@ -8,6 +8,9 @@ import js.html.PerformanceTiming;
 extern class Performance {
 
 	function getEntriesByType(type:String):Array<PerformanceResourceTiming>;
+	function getEntriesByName(name:String):Array<PerformanceResourceTiming>;
+	function getEntries():Array<PerformanceResourceTiming>;
+	function setResourceTimingBufferSize(val:Int):Void;
 
 	var timing(default, null):PerformanceTiming;
 	var navigation(default, null):PerformanceNavigation;
