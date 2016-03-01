@@ -6,7 +6,6 @@ import js.Browser;
 
 @:expose class PerfPlus {
 
-	public static var RESOURCE_TIMING_BUFFER:Int = 500;
 	public static var MEASUREMENT_INTERVAL:Int = 1000;
 	public var averageFps:Float;
 	public var currentFps:Float;
@@ -83,10 +82,6 @@ import js.Browser;
 		_addResources();
 
 		_win.requestAnimationFrame(cast _tick);
-
-		if (untyped __js__("window.performance").setResourceTimingBufferSize != null) {
-			_perfObj.setResourceTimingBufferSize(RESOURCE_TIMING_BUFFER);
-		}
 
 		if (untyped __js__("window.performance").timing != null) {
 			pageLoadTime = _perfObj.timing.responseEnd - _perfObj.timing.navigationStart;

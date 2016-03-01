@@ -1,6 +1,6 @@
 {
 	"name": "perf-plus.js",
-	"version": "0.1.5",
+	"version": "0.1.7",
 	"description": "Advanced stats library to monitor, frame time, memory and resource details.",
 	"author": "Adi Reddy Mora",
 	"homepage": "http://adireddy.github.io",
@@ -36,7 +36,7 @@
 		"grunt-haxe": "^0.1.12",
 		"grunt-zip": "^0.16.0"
 	},
-	"main": "./dist/perf-plus.min.js",
+	"main": "./dist/perf-plus.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	}

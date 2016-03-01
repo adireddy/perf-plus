@@ -289,7 +289,6 @@ PerfPlus.prototype = {
 		this._memCheck = this._perfObj != null && this._memoryObj != null && this._memoryObj.totalJSHeapSize > 0;
 		this._addResources();
 		this._win.requestAnimationFrame($bind(this,this._tick));
-		if(window.performance.setResourceTimingBufferSize != null) this._perfObj.setResourceTimingBufferSize(PerfPlus.RESOURCE_TIMING_BUFFER);
 		if(window.performance.timing != null) {
 			this.pageLoadTime = this._perfObj.timing.responseEnd - this._perfObj.timing.navigationStart;
 			this.pageRenderTime = this._perfObj.timing.loadEventStart - this._perfObj.timing.domLoading;
@@ -569,7 +568,6 @@ pixi_plugins_app_Application.AUTO = "auto";
 pixi_plugins_app_Application.RECOMMENDED = "recommended";
 pixi_plugins_app_Application.CANVAS = "canvas";
 pixi_plugins_app_Application.WEBGL = "webgl";
-PerfPlus.RESOURCE_TIMING_BUFFER = 500;
 PerfPlus.MEASUREMENT_INTERVAL = 1000;
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports);
