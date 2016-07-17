@@ -243,7 +243,6 @@ Main.prototype = $extend(pixi_plugins_app_Application.prototype,{
 });
 var PerfPlus = $hx_exports.PerfPlus = function(win,showUI) {
 	if(showUI == null) showUI = true;
-	this._bytesPerMs = 0;
 	this.currentFps = 0;
 	this.averageFps = 0;
 	this.currentMs = 0;
@@ -267,8 +266,9 @@ var PerfPlus = $hx_exports.PerfPlus = function(win,showUI) {
 PerfPlus.prototype = {
 	_addResources: function() {
 		if(window.performance.getEntriesByType != null) {
+			this._perfObj.setResourceTimingBufferSize(500);
 			var data = this._perfObj.getEntriesByType("resource");
-			this._ui.addResources(data,this._bytesPerMs);
+			this._ui.addResources(data);
 			this.resourceCount = data.length;
 			this.resourceLoadDuration = this._ui.resourceLoadDuration;
 			this.types = this._ui.fileTypes;
@@ -319,7 +319,6 @@ PerfPlus.prototype = {
 		}
 	}
 	,_init: function() {
-		this._bytesPerMs = 0;
 		this.currentFps = 0;
 		this.averageFps = 0;
 		this.currentMs = 0;
@@ -373,7 +372,6 @@ PerfPlus.prototype = {
 	}
 	,destroy: function() {
 		if(this._showUI) this._ui.destroy();
-		this._bytesPerMs = 0;
 		this.currentFps = 0;
 		this.averageFps = 0;
 		this.currentMs = 0;
