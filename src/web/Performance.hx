@@ -12,6 +12,10 @@ extern class Performance {
 	function getEntries():Array<PerformanceResourceTiming>;
 	function setResourceTimingBufferSize(val:Int):Void;
 
+	function clearMarks():Void;
+	function clearMeasures():Void;
+	function clearResourceTimings():Void;
+
 	var timing(default, null):PerformanceTiming;
 	var navigation(default, null):PerformanceNavigation;
 	var memory(default, null):MemoryInfo;

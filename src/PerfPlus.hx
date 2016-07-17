@@ -43,8 +43,6 @@ import js.Browser;
 	var _totalFps:Float;
 	var _updateIntervalCount:Float;
 
-	var _bytesPerMs:Float;
-
 	public function new(?win:Window, ?showUI:Bool = true) {
 		_init();
 		if (win == null) win = Browser.window;
@@ -55,8 +53,18 @@ import js.Browser;
 
 	inline function _addResources() {
 		if (untyped __js__("window.performance").getEntriesByType != null) {
+			/*var prevData = _perfObj.getEntriesByType("resource");
+			var prevFiles:Array<FileData> = [];
+			_perfObj.clearResourceTimings();
+			if (prevData.length > 0) {
+				_ui.addResources(prevData);
+				prevFiles = _ui.files;
+			}*/
+
+			_perfObj.setResourceTimingBufferSize(500);
 			var data = _perfObj.getEntriesByType("resource");
-			_ui.addResources(data, _bytesPerMs);
+
+			_ui.addResources(data);
 			resourceCount = data.length;
 			resourceLoadDuration = _ui.resourceLoadDuration;
 			types = _ui.fileTypes;
@@ -67,6 +75,7 @@ import js.Browser;
 			});
 			types.reverse();
 
+			//files = files.concat(prevFiles);
 			files.sort(function(comp1:FileData, comp2:FileData):Int {
 				return Reflect.compare(comp1.duration, comp2.duration);
 			});
@@ -107,7 +116,6 @@ import js.Browser;
 	}
 
 	inline function _init() {
-		_bytesPerMs = 0;
 		currentFps = 0;
 		averageFps = 0;
 		currentMs = 0;
